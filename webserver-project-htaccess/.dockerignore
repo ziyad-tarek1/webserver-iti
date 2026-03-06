@@ -1,0 +1,10 @@
+# Reduce build context; exclude unnecessary files
+.git
+.gitignore
+*.md
+.env
+.env.*
+!.env.example
+__pycache__
+*.pyc
+.DS_Store

@@ -1,0 +1,25 @@
+# Apache .htaccess lab - production-oriented compose
+# For production: copy .env.example to .env and set credentials.
+# Compose auto-loads .env for variable substitution.
+
+services:
+  apache:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: apache-htaccess:latest
+    container_name: apache-htaccess
+    ports:
+      - "${PORT:-80}:80"
+    volumes:
+      - ./htdocs:/usr/local/apache2/htdocs:ro
+    environment:
+      - HTACCESS_USERNAME=${HTACCESS_USERNAME:-admin}
+      - HTACCESS_PASSWORD=${HTACCESS_PASSWORD:-secret}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s

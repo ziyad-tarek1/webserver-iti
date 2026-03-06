@@ -1,0 +1,12 @@
+# Credentials - never commit; use .env or generate at deploy
+.htpasswd
+htdocs/secure/.htpasswd
+
+# Environment with secrets
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db

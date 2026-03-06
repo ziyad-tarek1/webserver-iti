@@ -1,0 +1,5 @@
+AuthType Basic
+AuthName "Restricted Area"
+# Path in container; entrypoint writes to /tmp when htdocs is mounted :ro
+AuthUserFile /tmp/.htpasswd
+Require valid-user

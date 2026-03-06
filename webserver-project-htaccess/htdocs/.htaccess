@@ -1,0 +1,2 @@
+RewriteEngine On
+RewriteRule ^old-page$ /public/ [R=301,L]
