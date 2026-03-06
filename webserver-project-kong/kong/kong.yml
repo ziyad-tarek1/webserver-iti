@@ -1,0 +1,27 @@
+# Kong dbless declarative config - path-based routing
+_format_version: "3.0"
+
+services:
+  - name: app1-service
+    url: http://app1:80
+    routes:
+      - name: app1-route
+        paths:
+          - /app1
+        strip_path: true
+
+  - name: app2-service
+    url: http://app2:80
+    routes:
+      - name: app2-route
+        paths:
+          - /app2
+        strip_path: true
+
+  - name: app3-service
+    url: http://app3:80
+    routes:
+      - name: app3-route
+        paths:
+          - /app3
+        strip_path: true
