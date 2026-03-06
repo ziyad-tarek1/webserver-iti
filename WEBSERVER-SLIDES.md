@@ -396,7 +396,7 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 ## Lab 5: Apache .htaccess
 
 
-Basic Auth, redirects, per-directory config — see lab README for tests.
+Basic Auth, redirects, per-directory config 
 
 ---
 
