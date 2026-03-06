@@ -43,3 +43,15 @@ cd /Users/ziyadtarek/Desktop/webserver-iti/webserver-project-Routes && docker co
 ```
 
 See each lab's `README.md` for details.
+
+---
+
+### Build slides PDF (with logos)
+
+Images (e.g. in `images/`) are **local files**. Marp blocks them unless you allow local file access:
+
+```bash
+npx @marp-team/marp-cli WEBSERVER-SLIDES.md -o webserver-slides.pdf --allow-local-files
+```
+
+Without `--allow-local-files`, the PDF is built but logos and the ITI footer image will not appear.

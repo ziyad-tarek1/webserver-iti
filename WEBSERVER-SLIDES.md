@@ -2,30 +2,41 @@
 marp: true
 theme: default
 paginate: true
+footer: '![ITI](images/iti-logo.jpg) Information Technology Institute (ITI)'
 style: |
   section { font-size: 28px; }
   table { font-size: 22px; }
   pre { font-size: 18px; }
+  footer { font-size: 0.5em; opacity: 0.85; }
+  footer img { height: 20px; vertical-align: middle; margin-right: 6px; }
+  .logo-row { text-align: center; margin-top: 1.5rem; }
+  .logo-item { display: inline-block; text-align: center; margin: 0 1.5rem; vertical-align: top; min-width: 120px; }
+  .logo-item img { display: block; margin: 0 auto 0.5rem; width: 100px; height: 100px; object-fit: contain; }
+  .logo-item strong { display: block; font-size: 0.9em; white-space: nowrap; }
 ---
 
+<!-- _class: lead -->
+# Web Servers, Proxy & Load Balancing
+
+<div class="logo-row">
+  <span class="logo-item"><img src="images/nginx-logo.png" alt="Nginx" /><strong>Nginx</strong></span>
+  <span class="logo-item"><img src="images/apache-logo.svg" alt="Apache" /><strong>Apache</strong></span>
+  <span class="logo-item"><img src="images/kong-logo.png" alt="Kong" /><strong>Kong</strong></span>
+</div>
+
+---
 <!-- _class: lead -->
 # Who am I?
 
 **Ziyad Tarek**  
 Sr. SRE/DevOps Engineer @ Rabbit Mart
 
+**Email:** ziyadtarek180@gmail.com · **Phone:** +201120364754
+
 **Certifications**
 - CKA · CKAD · KCSA · KCNA
-- AWS Cloud Practitioner · Terraform Associate
-- Google Cloud Associate Cloud Engineer · Huawei Cloud Developer Associate
+- AWS Cloud Practitioner · Terraform Associate · GCP Associate Cloud Engineer
 - RHCSA · GitHub Foundations
-
----
-
-<!-- _class: lead -->
-# Web Servers, Proxy & Load Balancing
-
-<!-- **2 Sessions × 2 Hours | Total: 4 Hours** -->
 
 ---
 
@@ -58,7 +69,7 @@ Browser  →  DNS  →  Internet  →  Web Server  →  App Server  →  Databas
 | Component | Role | Examples |
 |-----------|------|----------|
 | **Client** | Sends requests | Browser, curl, Postman |
-| **DNS** | Domain → IP | `google.com` → `142.250.191.14` |
+| **DNS** | Domain → IP | `google.com` → `142.251.39.174` |
 | **Web Server** | Receives HTTP, returns responses | Nginx, Apache |
 | **App Server** | Business logic | Node, Django, PHP |
 | **Database** | Persists data | PostgreSQL, MySQL |
@@ -149,7 +160,10 @@ Content-Type: application/json
 | `/users` | Path |
 | `?id=5` | Query string |
 
-**URI** = identifies resource | **URL** = includes location
+**URI** = identifies resource | **URL** = URI with location (how to get it)
+
+**URI only:** `urn:isbn:978-0-262-03384-8` · `mailto:user@example.com`  
+**URL:** `https://example.com/users?id=5` (includes protocol + host + path)
 
 ---
 
@@ -178,90 +192,176 @@ User → Nginx → App Server → Database
 
 ---
 
-## Apache vs Nginx
+## Apache vs Nginx — Quick Comparison
 
 | | Apache | Nginx |
 |---|--------|-------|
-| Model | Process/thread per request | Event-driven |
-| Config | .htaccess per-directory | Main config only |
-| Best for | Flexibility | Concurrency, reverse proxy |
+| **How it works** | 1 process/thread per request | Event-driven (non-blocking) |
+| **Config** | .htaccess in each folder | One main config file |
+| **Choose when** | Shared hosting, .htaccess needed | High traffic, reverse proxy |
+
+Nginx handles many connections with less memory. Apache is easier to tweak per folder.
 
 ---
 
-## Document Roots — Where Files Live
+## Where Are My HTML Files? (Document Root)
 
-| Server | Path |
-|--------|------|
-| Apache | `/var/www/html` |
-| Apache (Docker) | `/usr/local/apache2/htdocs/` |
+**The server looks in one folder for your files — that's the document root.**
+
+| Server | Default folder |
+|--------|----------------|
+| Apache (Linux) | `/var/www/html` |
 | Nginx | `/usr/share/nginx/html` |
-| Nginx (custom) | `root /var/www/html;` in config |
 
-**Request `/` → looks for `index.html` in root**
+<!-- | Apache (Docker) | `/usr/local/apache2/htdocs/` | -->
+
+Request `/` → server looks for `index.html`. Request `/about` → looks for `about` or `about/index.html`.
 
 ---
 
-## Config Locations
+## Where Is the Config File?
 
-| Server | Config path |
-|--------|-------------|
+**Edit these when you change ports, domains, or routing:**
+
+| Server | Config file(s) |
+|--------|----------------|
 | Apache | `/etc/apache2/sites-available/` |
-| Apache (Docker) | `/usr/local/apache2/conf/httpd.conf` |
-| Nginx | `/etc/nginx/nginx.conf`, `/etc/nginx/conf.d/` |
+| Nginx | `/etc/nginx/nginx.conf` + `/etc/nginx/conf.d/` |
+
+In our labs we mount `nginx.conf` from the project — edit locally, container uses it.
 
 ---
 
-## Nginx Config Structure
+## Nginx Config: The Big Picture
 
 ```
-/etc/nginx/
-├── nginx.conf       # Main config
-├── mime.types       # Content-Type mapping
-└── conf.d/          # Site configs
+nginx.conf
+├── worker_processes   → how many workers
+├── events             → max connections
+└── http
+    └── server         → one per site (listen, server_name, root, location)
+```
+
+**Flow:** Each `server` block = one website. Each `location` = one path rule.
+
+---
+
+## Nginx Config: Top-Level Pieces
+
+```nginx
+worker_processes 1;        # How many Nginx processes run
+events {
+  worker_connections 1024;  # Max connections per worker
+}
+```
+
+For demos we use 1 worker; in production often set to number of CPU cores.
+
+---
+
+## Nginx Config: Server Block
+
+```nginx
+server {
+  listen 80;              # Accept requests on port 80
+  server_name localhost;  # Which domain (localhost = any)
+  root /var/www/html;     # Where static files live
+  ...
+}
+```
+
+`root` = the folder for HTML, CSS, images. Without it, Nginx won't serve static files.
+
+---
+
+## Nginx Config: Location Blocks
+
+```nginx
+location / {
+  index index.html;       # / → serve index.html
+}
+location /api {
+  proxy_pass http://backend:3000;   # /api → send to backend app
+}
+```
+
+`/` = default static. `/api` = proxy to backend. The path decides static vs proxy.
+
+---
+
+## Apache Config: The Big Picture
+
+```
+httpd.conf or sites-available/
+├── Listen 80
+├── DocumentRoot       → default folder for files
+└── <VirtualHost>      → one per site (like Nginx server block)
+    ├── ServerName
+    ├── DocumentRoot
+    └── <Directory>    → permissions, AllowOverride (for .htaccess)
 ```
 
 ---
 
-## Nginx Key Directives
+## Apache Config: VirtualHost Example
 
-| Directive | Purpose |
-|-----------|---------|
-| `worker_processes` | # of workers |
-| `root` | Document root |
-| `location /` | Path matching |
-| `proxy_pass` | Forward to backend |
-| `include` | Include config |
+```apache
+<VirtualHost *:80>
+  ServerName example.com
+  DocumentRoot /var/www/html
+
+  <Directory /var/www/html>
+    AllowOverride All    # ← Lets .htaccess work here
+    Require all granted
+  </Directory>
+</VirtualHost>
+```
+
+One VirtualHost per site. `AllowOverride All` means .htaccess in that folder is read.
 
 ---
 
-## Apache .htaccess
+## Nginx vs Apache: Config Comparison
 
-**Per-directory config** — no server restart needed.
+| Concept | Nginx | Apache |
+|---------|-------|--------|
+| One site | `server { }` | `<VirtualHost> </VirtualHost>` |
+| File folder | `root /path` | `DocumentRoot /path` |
+| Path rules | `location /path { }` | `location` or `.htaccess` |
+| Per-folder config | ❌ None | ✅ `.htaccess` |
+
+---
+
+## What Is .htaccess?
+
+**Apache-only.** A file you put *inside* a folder to change behavior for that folder only.
 
 | Use | Example |
 |-----|---------|
-| Redirects | HTTP → HTTPS |
-| Auth | Password-protect dir |
-| Rewrite | Clean URLs |
-| Error pages | Custom 404 |
+| Redirect | HTTP → HTTPS |
+| Auth | Password-protect /admin |
+| Rewrite | Pretty URLs |
+| Error page | Custom 404 |
 
-**Nginx has no .htaccess** — use `location` blocks
+Nginx has nothing like this — use `location` blocks in the main config instead.
 
 ---
 
-## .htaccess Example
+## .htaccess: When to Use
+
+```
+✅ Shared hosting (no root access)
+✅ Quick tweak without editing main config
+❌ High traffic (Apache reads it every request — slow)
+```
+
+**Simple example:** redirect HTTP to HTTPS:
 
 ```apache
 RewriteEngine On
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-AuthType Basic
-AuthName "Restricted"
-Require valid-user
 ```
-
-**Use:** Shared hosting, quick tweaks | **Avoid:** High traffic (move to main config)
 
 ---
 
@@ -290,11 +390,13 @@ location /api {
 ## Inspecting HTTP: curl
 
 ```bash
-curl -v https://google.com   # Verbose
-curl -I https://google.com   # Headers only
+curl -v URL          # Verbose (TLS, headers)
+curl -I URL          # Headers only
+curl -k URL          # Skip SSL cert verification (insecure)
+curl -h              # Help / list options
 ```
 
-Shows TLS handshake, headers, status code.
+**Common options:** `-X POST` method · `-d '{"key":"val"}'` body · `-H "Header: val"` · `-b "cookie=val"` · `-H "Authorization: Bearer TOKEN"`
 
 ---
 
