@@ -124,9 +124,7 @@ Content-Type: application/json
 
 ---
 
-<!-- ## Common Status Codes -->
-
-## HTTP status codes
+## HTTP status codes 
 
 | Range | Meaning | Examples |
 |-------|---------|----------|
@@ -138,6 +136,13 @@ Content-Type: application/json
 | | `301` Moved Permanently | Resource moved permanently |
 | | `302` Found | Temporary redirect |
 | | `304` Not Modified | Use cached version |
+
+---
+
+## HTTP status codes cont.
+
+| Range | Meaning | Examples |
+|-------|---------|----------|
 | **4XX** | Client error | Request invalid or unauthorized |
 | | `400` Bad Request | Malformed request |
 | | `401` Unauthorized | Authentication required |
@@ -147,7 +152,6 @@ Content-Type: application/json
 | | `500` Internal Server Error | Unexpected server error |
 | | `502` Bad Gateway | Upstream (e.g. backend) error |
 | | `503` Service Unavailable | Server overloaded or down |
-
 
 ---
 
