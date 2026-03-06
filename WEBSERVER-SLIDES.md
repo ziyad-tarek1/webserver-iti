@@ -44,8 +44,8 @@ Sr. SRE/DevOps Engineer @ Rabbit Mart
 
 | Session | Content |
 |---------|---------|
-| **Session 1** | Web Fundamentals, HTTP, Nginx/Apache, Document Roots, Labs 1 |
-| **Session 2** | Load Balancing, Path Routing, Rate Limiting, Caching, Security, API Gateway, Labs 2–4 |
+| **Session 1** | Web Fundamentals, HTTP, Nginx/Apache, Document Roots, .htaccess, Labs 1 & 5 |
+| **Session 2** | Load Balancing, Path Routing, Rate Limiting, Caching, Security, API Gateway (Kong), Labs 2, 3, 4 & 6 |
 
 ---
 
@@ -223,6 +223,24 @@ Request `/` → server looks for `index.html`. Request `/about` → looks for `a
 
 ---
 
+<!-- _class: lead -->
+## Let's go for Lab 1!
+## Basic Web Servers
+
+---
+
+## Lab 1: Basic Web Servers
+
+`./web1`, `./web2`, `./web3` → Apache `htdocs/`
+
+```bash
+curl http://localhost:8081
+curl http://localhost:8082
+curl http://localhost:8083
+```
+
+---
+
 ## Where Is the Config File?
 
 **Edit these when you change ports, domains, or routing:**
@@ -369,6 +387,19 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 ---
 
+<!-- _class: lead -->
+## Let's go for Lab 5!
+## Apache .htaccess
+
+---
+
+## Lab 5: Apache .htaccess
+
+
+Basic Auth, redirects, per-directory config — see lab README for tests.
+
+---
+
 ## Reverse Proxy
 
 ```
@@ -467,23 +498,6 @@ Key headers: `cf-cache-status: HIT`, `server: cloudflare`, `x-frame-options: DEN
 
 ---
 
-## Lab 1: Basic Web Servers
-
-```bash
-cd webserver-project
-docker compose up -d
-```
-
-`./web1`, `./web2`, `./web3` → Apache `htdocs/`
-
-```bash
-curl http://localhost:8081
-curl http://localhost:8082
-curl http://localhost:8083
-```
-
----
-
 # Session 2
 ## Load Balancing, Caching, Security & API Gateway
 
@@ -512,6 +526,12 @@ curl http://localhost:8083
 
 ---
 
+<!-- _class: lead -->
+## Let's go for Lab 2!
+## Load Balancer
+
+---
+
 ## Lab 2: Load Balancer
 
 ```nginx
@@ -537,6 +557,12 @@ curl http://localhost   # Rotates web1, web2, web3
 /app2 → web2
 /app3 → web3
 ```
+
+---
+
+<!-- _class: lead -->
+## Let's go for Lab 3!
+## Path-Based Routing
 
 ---
 
@@ -572,12 +598,14 @@ limit_req_status 429;
 
 ---
 
+<!-- _class: lead -->
+## Let's go for Lab 4!
+## Rate Limiting
+
+---
+
 ## Lab 4: Rate Limiting
 
-```bash
-cd webserver-project-RL
-docker compose up -d
-```
 
 Trigger: `for i in {1..15}; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost; done`
 
@@ -642,6 +670,19 @@ Client → API Gateway → User Service
 
 ---
 
+<!-- _class: lead -->
+## Let's go for Lab 6!
+## Kong API Gateway
+
+---
+
+## Lab 6: Kong API Gateway
+
+
+Kong dbless + 3 Nginx apps, path-based routing 
+
+---
+
 ## Production Architecture
 
 ```
@@ -699,10 +740,12 @@ Internet sees proxy IP, not employee
 
 | Lab | Project | Purpose |
 |-----|---------|---------|
-| 1 | webserver-project | 3 Apache, direct ports |
+| 1 | webserver-project | 3 Apache servers, direct ports |
 | 2 | webserver-project-LB | Nginx load balancer |
 | 3 | webserver-project-Routes | Path routing /app1, /app2, /app3 |
 | 4 | webserver-project-RL | Rate limiting (429) |
+| 5 | webserver-project-htaccess | Apache .htaccess (Basic Auth, redirects) |
+| 6 | webserver-project-kong | Kong API Gateway, path-based routing |
 
 ---
 

@@ -7,7 +7,7 @@ Demo labs for web servers, load balancing, path routing, and Apache .htaccess.
 | **1. Basic** | `webserver-project` | 3 Apache web servers (no load balancer) |
 | **2. Load Balancer** | `webserver-project-LB` | Nginx reverse proxy + round-robin LB |
 | **3. Path Routing** | `webserver-project-Routes` | Nginx routes /app1, /app2, /app3 to separate backends |
-| **4. Rate lIMITING** | `webserver-project-RL` | Nginx used to rate limit request  |
+| **4. Rate Limiting** | `webserver-project-RL` | Nginx used to rate limit requests |
 | **5. Apache .htaccess** | `webserver-project-htaccess` | Apache with Basic Auth, redirects, per-dir config |
 | **6. Kong Gateway** | `webserver-project-kong` | Kong dbless + 3 Nginx apps, path-based routing |
 
@@ -30,7 +30,7 @@ cd webserver-project-RL && docker compose up -d
 # Lab 5 (requires --build)
 cd webserver-project-htaccess && docker compose up -d --build
 
-# Lab 5
+# Lab 6
 cd webserver-project-kong && docker compose up -d
 ```
 
