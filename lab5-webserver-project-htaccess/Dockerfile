@@ -16,6 +16,8 @@ RUN apk add --no-cache wget
 # Step 3: Enable mod_rewrite - REQUIRED for RewriteRule in .htaccess
 # By default Apache has it commented out; we uncomment it
 # Without this, our redirect (old-page -> public/) would NOT work
+
+# docker run --rm httpd:2.4-alpine cat /usr/local/apache2/conf/httpd.conf
 RUN sed -i 's/#LoadModule rewrite_module /LoadModule rewrite_module /' /usr/local/apache2/conf/httpd.conf
 
 # Step 4: Add our custom Apache config
