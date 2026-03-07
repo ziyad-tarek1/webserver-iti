@@ -1,10 +1,11 @@
-# Reduce build context; exclude unnecessary files
+# =============================================================================
+# LAB 5: Docker Build Context - exclude these from the image
+# =============================================================================
+# Smaller context = faster builds. We exclude secrets and dev files.
+
 .git
 .gitignore
 *.md
-.env
-.env.*
-!.env.example
 __pycache__
 *.pyc
 .DS_Store

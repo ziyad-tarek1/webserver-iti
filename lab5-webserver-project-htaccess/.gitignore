@@ -1,12 +1,10 @@
-# Credentials - never commit; use .env or generate at deploy
-.htpasswd
-htdocs/secure/.htpasswd
+# =============================================================================
+# LAB 5: Files to ignore
+# =============================================================================
+# Note: htdocs/secure/.htpasswd is committed for demo (admin/secret). For production,
+# add it here and use your own credentials.
+# =============================================================================
 
-# Environment with secrets
-.env
-.env.local
-.env.*.local
-
-# OS
+# OS junk files
 .DS_Store
 Thumbs.db

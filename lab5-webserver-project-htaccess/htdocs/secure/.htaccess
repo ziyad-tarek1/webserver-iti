@@ -1,5 +1,11 @@
+# =============================================================================
+# LAB 5: Secure Directory .htaccess - Basic Authentication
+# =============================================================================
+# Protects /secure/ - users must enter username/password from .htpasswd file.
+# AuthUserFile = full path to .htpasswd inside the container.
+# =============================================================================
+
 AuthType Basic
 AuthName "Restricted Area"
-# Path in container; entrypoint writes to /tmp when htdocs is mounted :ro
-AuthUserFile /tmp/.htpasswd
+AuthUserFile /usr/local/apache2/htdocs/secure/.htpasswd
 Require valid-user

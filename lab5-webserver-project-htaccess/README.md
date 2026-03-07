@@ -1,5 +1,9 @@
 # Lab — Apache & .htaccess
 
+> **For Students:** Want to build this lab from scratch? See **[STEP_BY_STEP.md](STEP_BY_STEP.md)** for a detailed, commented walkthrough with explanations for every file.
+
+---
+
 ## Description
 
 Apache HTTP Server with `.htaccess` enabled. Demonstrates:
@@ -10,32 +14,14 @@ Apache HTTP Server with `.htaccess` enabled. Demonstrates:
 
 ---
 
-## Production Improvements Summary
-
-| Area | Improvement | Why |
-|------|-------------|-----|
-| **Security** | Credentials via env vars, `.htpasswd` in `.gitignore` | No secrets in image or repo |
-| **Security** | Custom security headers | Mitigate XSS, clickjacking, MIME sniffing |
-| **Security** | Custom error pages | Better UX, avoid leaking stack traces |
-| **Docker** | Pinned base `httpd:2.4-alpine` | Reproducible, smaller image |
-| **Docker** | Healthcheck | Orchestrators can detect unhealthy containers |
-| **Docker** | `.dockerignore` | Faster builds, smaller context |
-| **Config** | Layered Apache config (`config/httpd-custom.conf`) | No sed hacks; easier to maintain |
-| **Scripts** | Entrypoint generates `.htpasswd` at runtime | Credentials from env/secrets, not baked in |
-| **Docs** | `docs/ARCHITECTURE.md` | Documents design decisions |
-
----
-
 ## Project Structure
 
 ```
 .
 ├── config/
 │   └── httpd-custom.conf    # AllowOverride, security headers, error pages
-├── docs/
-│   └── ARCHITECTURE.md      # Design decisions
 ├── htdocs/
-│   ├── .htaccess           # Redirect /old-page → /public/
+│   ├── .htaccess            # Redirect /old-page → /public/
 │   ├── index.html
 │   ├── errors/              # Custom 401, 403, 404, 500 pages
 │   │   ├── 401.html
@@ -46,12 +32,9 @@ Apache HTTP Server with `.htaccess` enabled. Demonstrates:
 │   │   └── index.html
 │   └── secure/
 │       ├── .htaccess        # Basic Auth
-│       ├── .htpasswd.example
+│       ├── .htpasswd        # Password file (admin/secret)
 │       └── index.html
-├── scripts/
-│   └── docker-entrypoint.sh # Generates .htpasswd from env vars
 ├── .dockerignore
-├── .env.example
 ├── .gitignore
 ├── Dockerfile
 ├── docker-compose.yaml
@@ -71,24 +54,12 @@ Apache HTTP Server with `.htaccess` enabled. Demonstrates:
 
 ## Deploy
 
-### Lab (default credentials)
-
 ```bash
-cd webserver-project-htaccess
+cd lab5-webserver-project-htaccess
 docker compose up -d --build
 ```
 
-Uses `.htpasswd.example` → credentials `admin` / `secret`.
-
-### Production (env-based credentials)
-
-```bash
-cp .env.example .env
-# Edit .env: set HTACCESS_USERNAME and HTACCESS_PASSWORD
-docker compose up -d --build
-```
-
-Compose loads `.env` for variable substitution. The entrypoint generates `.htpasswd` from these env vars at container start.
+Credentials are in `htdocs/secure/.htpasswd` — username `admin`, password `secret`.
 
 ### Verify
 
@@ -136,75 +107,16 @@ docker compose down
 
 ---
 
-## Step-by-Step: How to Create This Lab
-
-### Step 1: Enable .htaccess in Apache
-
-Create a custom config instead of patching `httpd.conf` with `sed`:
-
-**config/httpd-custom.conf**:
-```apache
-<Directory "/usr/local/apache2/htdocs">
-    AllowOverride All
-    Require all granted
-</Directory>
-```
-
-Include it from the main config. Enable `mod_rewrite` for `RewriteRule`.
-
-### Step 2: Docker Compose
-
-Use env vars for credentials, add healthcheck and restart policy. See `docker-compose.yaml`.
-
-### Step 3: Document root and content
-
-Create `htdocs/`, `htdocs/public/`, `htdocs/secure/`, and `htdocs/errors/` with HTML files.
-
-### Step 4: Root .htaccess — redirect
-
-```apache
-RewriteEngine On
-RewriteRule ^old-page$ /public/ [R=301,L]
-```
-
-### Step 5: Secure directory — Basic Auth
-
-```apache
-AuthType Basic
-AuthName "Restricted Area"
-AuthUserFile /tmp/.htpasswd
-Require valid-user
-```
-
-(Entrypoint writes to `/tmp/.htpasswd` so it works when htdocs is mounted read-only.)
-
-### Step 6: Credentials
-
-- **Lab**: Use `.htpasswd.example` (entrypoint copies it if no env vars set).
-- **Production**: Set `HTACCESS_USERNAME` and `HTACCESS_PASSWORD` in `.env`; entrypoint generates `.htpasswd` at start.
-
-### Step 7: Deploy and verify
-
-```bash
-docker compose up -d --build
-```
-
----
-
 ## Changing Credentials
 
-### Via env (production)
-
-Edit `.env` and restart:
-
-```bash
-docker compose down && docker compose up -d
-```
-
-### Via .htpasswd (manual)
+To add or change users, generate a new `.htpasswd`:
 
 ```bash
 docker run --rm httpd:2.4-alpine htpasswd -nbB username password
 ```
 
-Save output to `htdocs/secure/.htpasswd`. Ensure `.htpasswd` is in `.gitignore`.
+Save the output to `htdocs/secure/.htpasswd`, then restart:
+
+```bash
+docker compose down && docker compose up -d
+```

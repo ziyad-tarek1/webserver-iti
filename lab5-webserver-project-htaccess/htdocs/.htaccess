@@ -1,2 +1,10 @@
+# =============================================================================
+# LAB 5: Root .htaccess - URL Redirect Example
+# =============================================================================
+# This demonstrates mod_rewrite: when user visits /old-page, Apache redirects
+# them to /public/ with HTTP 301 (permanent redirect).
+# =============================================================================
+
 RewriteEngine On
+# ^old-page$ = exact match for "old-page", R=301 = permanent redirect, L = last rule
 RewriteRule ^old-page$ /public/ [R=301,L]

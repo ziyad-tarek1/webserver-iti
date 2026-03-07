@@ -1,6 +1,9 @@
-# Apache .htaccess lab - production-oriented compose
-# For production: copy .env.example to .env and set credentials.
-# Compose auto-loads .env for variable substitution.
+# =============================================================================
+# LAB 5: Docker Compose - Apache .htaccess Lab (Simple Demo)
+# =============================================================================
+# Run: docker compose up -d --build
+# Credentials: admin / secret (from htdocs/secure/.htpasswd)
+# =============================================================================
 
 services:
   apache:
@@ -9,14 +12,18 @@ services:
       dockerfile: Dockerfile
     image: apache-htaccess:latest
     container_name: apache-htaccess
+
     ports:
       - "${PORT:-80}:80"
+
+    # Mount htdocs as web root - .htpasswd lives in htdocs/secure/
     volumes:
       - ./htdocs:/usr/local/apache2/htdocs:ro
-    environment:
-      - HTACCESS_USERNAME=${HTACCESS_USERNAME:-admin}
-      - HTACCESS_PASSWORD=${HTACCESS_PASSWORD:-secret}
+
     restart: unless-stopped
+
+    # Healthcheck: Docker pings http://localhost/ every 10s
+    # If 3 retries fail, container is marked unhealthy
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost/"]
       interval: 10s
