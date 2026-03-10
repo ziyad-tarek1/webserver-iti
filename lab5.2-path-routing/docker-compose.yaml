@@ -1,0 +1,25 @@
+# Lab 5.2 - Apache Path-Based Routing (like Lab 3, but with Apache only)
+# /app1 → web1, /app2 → web2, /app3 → web3
+
+services:
+  web1:
+    image: httpd:2.4-alpine
+    volumes:
+      - ./web1:/usr/local/apache2/htdocs/
+  web2:
+    image: httpd:2.4-alpine
+    volumes:
+      - ./web2:/usr/local/apache2/htdocs/
+  web3:
+    image: httpd:2.4-alpine
+    volumes:
+      - ./web3:/usr/local/apache2/htdocs/
+
+  proxy:
+    build: .
+    ports:
+      - "80:80"
+    depends_on:
+      - web1
+      - web2
+      - web3
