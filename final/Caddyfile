@@ -1,0 +1,131 @@
+# =============================================================================
+# Microservice Routing - Blue-Green Deployment
+# local.iti.eg (HTTPS) -> Apache (v1) / Nginx (v2)
+# =============================================================================
+
+# Global options
+{
+	log {
+		output stdout
+		format console
+		level INFO
+	}
+}
+
+# HTTP -> HTTPS redirect
+http://local.iti.eg {
+	redir https://{host}{uri} permanent
+}
+
+# Main HTTPS site
+https://local.iti.eg {
+	tls internal
+
+	# Security headers (all responses)
+	header {
+		X-Frame-Options DENY
+		X-Content-Type-Options nosniff
+		X-XSS-Protection "1; mode=block"
+	}
+
+	# Rate limiting: 10 requests/second per client
+	rate_limit {
+		zone api {
+			key {http.request.remote.host}
+			window 1s
+			events 10
+		}
+	}
+
+	# Admin routes (must come before broader /v1, /v2 handlers) (Basic Auth: admin / admin123)
+	handle_path /v1/admin* {
+		basic_auth * {
+			admin $2a$14$YRwtzwCP8uVE8yBdTI.5Y.ZDNOP.1Eyu085UlOEs1PBsE1fXpGCDS
+		}
+		reverse_proxy adminv1:80 {
+			health_uri /health
+			health_interval 10s
+			fail_duration 30s
+			max_fails 3
+			lb_retries 2
+			lb_try_duration 5s
+		}
+	}
+
+	handle_path /v2/admin* {
+		basic_auth * {
+			admin $2a$14$YRwtzwCP8uVE8yBdTI.5Y.ZDNOP.1Eyu085UlOEs1PBsE1fXpGCDS
+		}
+		reverse_proxy adminv2:80 {
+			health_uri /health
+			health_interval 10s
+			fail_duration 30s
+			max_fails 3
+			lb_retries 2
+			lb_try_duration 5s
+		}
+	}
+
+	# Shop routes
+	handle_path /v1/shop* {
+		reverse_proxy shopv1:80 {
+			health_uri /health
+			health_interval 10s
+			fail_duration 30s
+			max_fails 3
+			lb_retries 2
+			lb_try_duration 5s
+		}
+	}
+
+	handle_path /v2/shop* {
+		reverse_proxy shopv2:80 {
+			health_uri /health
+			health_interval 10s
+			fail_duration 30s
+			max_fails 3
+			lb_retries 2
+			lb_try_duration 5s
+		}
+	}
+
+	# Cart routes
+	handle_path /v1/cart* {
+		reverse_proxy cartv1:80 {
+			health_uri /health
+			health_interval 10s
+			fail_duration 30s
+			max_fails 3
+			lb_retries 2
+			lb_try_duration 5s
+		}
+	}
+
+	handle_path /v2/cart* {
+		reverse_proxy cartv2:80 {
+			health_uri /health
+			health_interval 10s
+			fail_duration 30s
+			max_fails 3
+			lb_retries 2
+			lb_try_duration 5s
+		}
+	}
+
+	# Default redirects (exact /v1 or /v2 only - must be after specific paths)
+	@redirect_v1 path_regexp ^/v1/?$
+	handle @redirect_v1 {
+		redir https://{host}/v1/shop permanent
+	}
+	@redirect_v2 path_regexp ^/v2/?$
+	handle @redirect_v2 {
+		redir https://{host}/v2/shop permanent
+	}
+
+	# Serve maintenance page for 502/503 errors (when backends unhealthy)
+	handle_errors 502 503 {
+		root * /srv/maintenance
+		rewrite * /maintenance.html
+		file_server
+	}
+}
