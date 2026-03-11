@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Service | v1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1e3a5f;
+      --primary-light: #2d5a8a;
+      --accent: #3b82f6;
+      --accent-soft: #93c5fd;
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(135deg, var(--bg) 0%, #1e3a5f 50%, var(--bg) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 1rem;
+      padding: 2.5rem;
+      max-width: 420px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(59, 130, 246, 0.1);
+    }
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent), var(--primary-light));
+      color: white;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+    .locked { font-size: 0.7rem; color: var(--accent-soft); margin-left: 0.5rem; }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.75rem;
+      margin-bottom: 1.5rem;
+      color: var(--accent-soft);
+    }
+    .meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .meta-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: rgba(59, 130, 246, 0.08);
+      border-radius: 0.5rem;
+      border-left: 3px solid var(--accent);
+    }
+    .meta-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .meta-value { font-weight: 600; color: var(--text); }
+    .stack { font-size: 0.8rem; color: var(--muted); margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="badge">Apache · v1</span><span class="locked">🔒 Basic Auth</span>
+    <h1>Admin Service</h1>
+    <div class="meta">
+      <div class="meta-row">
+        <div>
+          <div class="meta-label">Version</div>
+          <div class="meta-value">v1</div>
+        </div>
+      </div>
+      <div class="meta-row">
+        <div>
+          <div class="meta-label">Container Instance</div>
+          <div class="meta-value">apache-admin-1</div>
+        </div>
+      </div>
+    </div>
+    <p class="stack">Stack: Apache · Blue-Green Deployment (Current)</p>
+  </div>
+</body>
+</html>

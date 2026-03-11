@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart Service | v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Outfit:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #14532d;
+      --primary-light: #166534;
+      --accent: #22c55e;
+      --accent-soft: #86efac;
+      --bg: #052e16;
+      --card: #14532d;
+      --text: #f0fdf4;
+      --muted: #86efac;
+      --opacity-muted: rgba(134, 239, 172, 0.6);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: linear-gradient(135deg, var(--bg) 0%, #166534 50%, var(--bg) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 1rem;
+      padding: 2.5rem;
+      max-width: 420px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(34, 197, 94, 0.15);
+    }
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent), var(--primary-light));
+      color: #052e16;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.75rem;
+      margin-bottom: 1.5rem;
+      color: var(--accent-soft);
+    }
+    .meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .meta-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: rgba(34, 197, 94, 0.12);
+      border-radius: 0.5rem;
+      border-left: 3px solid var(--accent);
+    }
+    .meta-label { font-size: 0.75rem; color: var(--opacity-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .meta-value { font-weight: 600; color: var(--text); }
+    .stack { font-size: 0.8rem; color: var(--opacity-muted); margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="badge">Nginx · v2</span>
+    <h1>Cart Service</h1>
+    <div class="meta">
+      <div class="meta-row">
+        <div>
+          <div class="meta-label">Version</div>
+          <div class="meta-value">v2</div>
+        </div>
+      </div>
+      <div class="meta-row">
+        <div>
+          <div class="meta-label">Container Instance</div>
+          <div class="meta-value">nginx-cart-1</div>
+        </div>
+      </div>
+    </div>
+    <p class="stack">Stack: Nginx · Blue-Green Deployment (New)</p>
+  </div>
+</body>
+</html>
